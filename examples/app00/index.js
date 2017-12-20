@@ -66,7 +66,14 @@ export default class App {
 		let indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
 
 		this._arrayBuffer = new ArrayBuffer(this.gl, vertices);
-		this._arrayBuffer.setAttribs('a_position', 2, this.gl.FLOAT, false, 0, 0);
+		this._arrayBuffer.setAttribs(
+			'a_position',
+			2,
+			this.gl.FLOAT,
+			false,
+			0,
+			0
+		);
 
 		this._indexBuffer = new IndexArrayBuffer(this.gl, indices);
 

@@ -1,1 +1,2 @@
-export { Camera } from './src/camera';
+export { PerspectiveCamera } from './src/perspectiveCamera';
+
