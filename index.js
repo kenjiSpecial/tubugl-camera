@@ -1,1 +1,1 @@
-export { Sample } from './src/sample';
+export { Camera } from './src/camera';
