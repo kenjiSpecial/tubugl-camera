@@ -1,1 +1,1 @@
-export { Sample } from './src/sample';
+export { PerspectiveCamera } from './src/perspectiveCamera';
