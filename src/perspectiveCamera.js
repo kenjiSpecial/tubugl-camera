@@ -77,6 +77,19 @@ export class PerspectiveCamera extends EventEmitter {
 		this._updateProjectionMatrix();
 	}
 
+	updateFov(fov) {
+		this._fov = fov;
+
+		this._updateProjectionMatrix();
+	}
+
+	updateDistance(near, far) {
+		if (near) this._near = near;
+		if (far) this._far = far;
+
+		this._updateProjectionMatrix();
+	}
+
 	_updateProjectionMatrix() {
 		mat4.perspective(
 			this.projectionMatrix,
