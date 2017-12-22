@@ -2,19 +2,11 @@ const EventEmitter = require('wolfy87-eventemitter');
 import { mat4 } from 'gl-matrix/src/gl-matrix';
 
 export class PerspectiveCamera extends EventEmitter {
-	constructor(
-		position = [0, 0, 0],
-		rotation = [0, 0, 0],
-		width = window.innerWidth,
-		height = window.innerHeight,
-		fov = 60,
-		near = 1,
-		far = 1000
-	) {
+	constructor(width = window.innerWidth, height = window.innerHeight, fov = 60, near = 1, far = 1000) {
 		super();
 
-		this._position = new Float32Array(position);
-		this._rotation = new Float32Array(rotation);
+		this._position = new Float32Array([0, 0, 0]);
+		this._rotation = new Float32Array([0, 0, 0]);
 
 		this._fov = fov;
 		this._width = width;
@@ -35,10 +27,26 @@ export class PerspectiveCamera extends EventEmitter {
 		return this;
 	}
 
+	setPosition(x, y, z) {
+		this.updatePosition(x, y, z);
+	}
+
 	updatePosition(x, y, z) {
 		if (x !== undefined) this._position[0] = x;
 		if (y !== undefined) this._position[1] = y;
 		if (z !== undefined) this._position[2] = z;
+
+		return this;
+	}
+
+	setRotation(x, y, z) {
+		this.updateRotation(x, y, z);
+	}
+
+	updateRotation(x, y, z) {
+		if (x !== undefined) this._rotation[0] = x;
+		if (y !== undefined) this._rotation[1] = y;
+		if (z !== undefined) this._rotation[2] = z;
 
 		return this;
 	}
@@ -55,15 +63,18 @@ export class PerspectiveCamera extends EventEmitter {
 
 	log() {
 		console.log(
-			`[PerspectiveCamera] position: {x: ${this._position[0]}, y: ${
-				this._position[1]
-			}, z: ${this._position[2]} }`
+			`[PerspectiveCamera] position: {x: ${this._position[0]}, y: ${this._position[1]}, z: ${this._position[2]} }`
 		);
 		console.log(
-			`[PerspectiveCamera] position: {x: ${this._rotation[0]}, y: ${
-				this._rotation[1]
-			}, z: ${this._rotation[2]} }`
+			`[PerspectiveCamera] position: {x: ${this._rotation[0]}, y: ${this._rotation[1]}, z: ${this._rotation[2]} }`
 		);
+	}
+
+	updateSize(width, height) {
+		this._width = width;
+		this._height = height;
+
+		this._updateProjectionMatrix();
 	}
 
 	_updateProjectionMatrix() {
