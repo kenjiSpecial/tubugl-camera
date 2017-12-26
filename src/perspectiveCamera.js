@@ -1,12 +1,14 @@
 const EventEmitter = require('wolfy87-eventemitter');
 import { mat4 } from 'gl-matrix/src/gl-matrix';
+import { Vector3 } from 'tubugl-math/src/vector3';
+import { Euler } from 'tubugl-math/src/euler';
 
 export class PerspectiveCamera extends EventEmitter {
 	constructor(width = window.innerWidth, height = window.innerHeight, fov = 60, near = 1, far = 1000) {
 		super();
 
-		this._position = new Float32Array([0, 0, 0]);
-		this._rotation = new Float32Array([0, 0, 0]);
+		this.position = new Vector3();
+		this.rotation = new Euler();
 
 		this._fov = fov;
 		this._width = width;
@@ -21,8 +23,8 @@ export class PerspectiveCamera extends EventEmitter {
 		this._updateProjectionMatrix();
 	}
 
-	update() {
-		this._updateViewMatrix();
+	update(forceUpdate = false) {
+		this._updateViewMatrix(forceUpdate);
 
 		return this;
 	}
@@ -32,9 +34,9 @@ export class PerspectiveCamera extends EventEmitter {
 	}
 
 	updatePosition(x, y, z) {
-		if (x !== undefined) this._position[0] = x;
-		if (y !== undefined) this._position[1] = y;
-		if (z !== undefined) this._position[2] = z;
+		if (x !== undefined) this.position.x = x;
+		if (y !== undefined) this.position.y = y;
+		if (z !== undefined) this.position.z = z;
 
 		return this;
 	}
@@ -44,9 +46,9 @@ export class PerspectiveCamera extends EventEmitter {
 	}
 
 	updateRotation(x, y, z) {
-		if (x !== undefined) this._rotation[0] = x;
-		if (y !== undefined) this._rotation[1] = y;
-		if (z !== undefined) this._rotation[2] = z;
+		if (x !== undefined) this.rotation.x = x;
+		if (y !== undefined) this.rotation.y = y;
+		if (z !== undefined) this.rotation.z = z;
 
 		return this;
 	}
@@ -56,17 +58,23 @@ export class PerspectiveCamera extends EventEmitter {
 	 * @param {Array}targetPosition
 	 */
 	lookAt(targetPosition) {
-		mat4.lookAt(this.viewMatrix, this._position, targetPosition, [0, 1, 0]);
+		if (Array.isArray(targetPosition)) mat4.lookAt(this.viewMatrix, this.position.array, targetPosition, [0, 1, 0]);
+		else mat4.lookAt(this.viewMatrix, this.position.array, targetPosition.array, [0, 1, 0]);
+
+		mat4.invert(this.rotation.matrix, this.viewMatrix);
+		this.rotation.setFromRotationMatrix(this.rotation.matrix);
+
+		this.needsUpdate = false;
 
 		return this;
 	}
 
 	log() {
 		console.log(
-			`[PerspectiveCamera] position: {x: ${this._position[0]}, y: ${this._position[1]}, z: ${this._position[2]} }`
+			`[PerspectiveCamera] position: {x: ${this.position.x}, y: ${this.position.y}, z: ${this.position.z} }`
 		);
 		console.log(
-			`[PerspectiveCamera] position: {x: ${this._rotation[0]}, y: ${this._rotation[1]}, z: ${this._rotation[2]} }`
+			`[PerspectiveCamera] rotation: {x: ${this.rotation.x}, y: ${this.rotation.y}, z: ${this.rotation.z} }`
 		);
 	}
 
@@ -100,12 +108,16 @@ export class PerspectiveCamera extends EventEmitter {
 		);
 	}
 
-	_updateViewMatrix() {
-		mat4.fromTranslation(this.viewMatrix, this._position);
+	_updateViewMatrix(forceUpdate = false) {
+		if (!this.needsUpdate && !forceUpdate) return;
 
-		mat4.rotateX(this.viewMatrix, this.viewMatrix, this._rotation[0]);
-		mat4.rotateX(this.viewMatrix, this.viewMatrix, this._rotation[1]);
-		mat4.rotateX(this.viewMatrix, this.viewMatrix, this._rotation[2]);
+		mat4.copy(this.viewMatrix, this.rotation.matrix);
+		this.viewMatrix[12] = this.position.array[0];
+		this.viewMatrix[13] = this.position.array[1];
+		this.viewMatrix[14] = this.position.array[2];
+		mat4.invert(this.viewMatrix, this.viewMatrix);
+
+		this.needsUpdate = false;
 
 		return this;
 	}

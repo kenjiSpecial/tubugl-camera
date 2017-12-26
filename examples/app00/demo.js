@@ -1,7 +1,6 @@
 'use strict';
 
-import App from './index';
-// import App from './apps/OrthoApp';
+import App from './app';
 
 let app;
 
@@ -10,11 +9,13 @@ start();
 
 function init() {
 	app = new App({
-		isDebug: true
+		isDebug: false
 	});
 
 	document.body.appendChild(app.canvas);
-	document.addEventListener('mousemove', onDocumentMouseMove, false);
+	app.canvas.addEventListener('mousemove', onDocumentMouseMove, false);
+	app.canvas.addEventListener('mousedown', onDocumentMouseDown, false);
+	app.canvas.addEventListener('mouseup', onDocumentMouseUp, false);
 }
 
 function start() {
@@ -22,12 +23,21 @@ function start() {
 }
 
 function onDocumentMouseMove(event) {
-	// event.preventDefault();
-
 	let mouseX = event.clientX / window.innerWidth * 2 - 1;
 	let mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
 
-	app.onMouseMove({ x: mouseX, y: mouseY });
+	app.mouseMoveHandler({ x: mouseX, y: mouseY });
+}
+
+function onDocumentMouseDown(event) {
+	let mouseX = event.clientX / window.innerWidth * 2 - 1;
+	let mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+
+	app.mouseDownHandler({ x: mouseX, y: mouseY });
+}
+
+function onDocumentMouseUp() {
+	app.mouseupHandler();
 }
 
 window.addEventListener('resize', function() {
