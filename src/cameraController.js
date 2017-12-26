@@ -151,8 +151,8 @@ export class CameraController extends EventEmitter {
 		} else if (this.state === 'pan') {
 			this._panEnd = { x: event.clientX, y: event.clientY };
 			this._panDelta = {
-				x: this._panEnd.x - this._panStart.x,
-				y: this._panEnd.y - this._panStart.y
+				x: -0.5 * (this._panEnd.x - this._panStart.x),
+				y: 0.5 * (this._panEnd.y - this._panStart.y)
 			};
 
 			let xDir = vec3.create();
