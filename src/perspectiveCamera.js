@@ -16,11 +16,15 @@ export class PerspectiveCamera extends EventEmitter {
 		this._near = near;
 		this._far = far;
 
+		this.needsUpdate = true;
+
 		this.viewMatrix = mat4.create();
 		this.projectionMatrix = mat4.create();
 
-		this._updateViewMatrix();
-		this._updateProjectionMatrix();
+		setTimeout(() => {
+			this._updateViewMatrix();
+			this._updateProjectionMatrix();
+		}, 0);
 	}
 
 	update(forceUpdate = false) {
@@ -63,7 +67,6 @@ export class PerspectiveCamera extends EventEmitter {
 
 		mat4.invert(this.rotation.matrix, this.viewMatrix);
 		this.rotation.setFromRotationMatrix(this.rotation.matrix);
-
 		this.needsUpdate = false;
 
 		return this;
@@ -109,8 +112,9 @@ export class PerspectiveCamera extends EventEmitter {
 	}
 
 	_updateViewMatrix(forceUpdate = false) {
-		if (!this.needsUpdate && !forceUpdate) return;
+		if (!this.rotation.needsMatrixUpdate && !this.needsUpdate && !forceUpdate) return;
 
+		this.rotation.updateMatrix();
 		mat4.copy(this.viewMatrix, this.rotation.matrix);
 		this.viewMatrix[12] = this.position.array[0];
 		this.viewMatrix[13] = this.position.array[1];

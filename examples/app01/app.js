@@ -8,7 +8,7 @@ const Stats = require('stats.js');
 
 import { DEPTH_TEST } from 'tubugl-constants';
 import { ProceduralRoundingCube } from 'tubugl-3d-shape';
-import { NormalHelper } from 'tubugl-helper';
+import { NormalHelper, GridHelper } from 'tubugl-helper';
 import { PerspectiveCamera, CameraController } from '../../index';
 
 export default class App {
@@ -50,14 +50,15 @@ export default class App {
 
 		this._camera.time += 1 / 60;
 
-		this._camera.position.x = 800 * Math.cos(this._camera.time);
-		this._camera.position.z = 800 * Math.sin(this._camera.time);
+		// this._camera.position.x = 800 * Math.cos(this._camera.time);
+		// this._camera.position.z = 800 * Math.sin(this._camera.time);
 
-		this._camera.lookAt([0, 0, 0]);
+		// this._camera.lookAt([0, 0, 0]);
 
 		this._camera.update();
 		this._box.render(this._camera);
 		this._normalHelper.render(this._camera);
+		this._gridHelper.render(this._camera);
 	}
 
 	animateOut() {
@@ -130,15 +131,16 @@ export default class App {
 
 	_makeHelper() {
 		this._normalHelper = new NormalHelper(this.gl, this._box);
+		this._gridHelper = new GridHelper(this.gl, 1000, 1000, 20, 20);
 	}
 	_makeCameraController() {
 		this._cameraController = new CameraController(this._camera, this.canvas);
+		this._cameraController.minDistance = 300;
+		this._cameraController.maxDistance = 1000;
 	}
 	_makeCamera() {
 		this._camera = new PerspectiveCamera(window.innerWidth, window.innerHeight, 60, 1, 2000);
-		this._camera.position.z = -800;
-		this._camera.time = 0;
-		this._camera.lookAt([0, 0, 0]);
+		this._camera.position.z = 800;
 	}
 
 	_addGui() {

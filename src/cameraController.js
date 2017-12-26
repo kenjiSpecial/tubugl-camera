@@ -1,5 +1,7 @@
 const EventEmitter = require('wolfy87-eventemitter');
 import { Vector3 } from 'tubugl-math/src/vector3';
+import { mathUtils } from 'tubugl-utils';
+import { vec3 } from 'gl-matrix';
 
 export class CameraController extends EventEmitter {
 	constructor(camera, domElement = document.body) {
@@ -46,10 +48,23 @@ export class CameraController extends EventEmitter {
 		this.originTarget = new Vector3();
 		this.originPosition = new Vector3(this._camera.position.x, this._camera.position.y, this._camera.position.z);
 
+		this._rotateStart = { x: null, y: null };
+		this._rotateEnd = { x: null, y: null };
+		this._roatteDelta = { x: null, y: null };
+
+		let dX = this._camera.position.x;
+		let dY = this._camera.position.y;
+		let dZ = this._camera.position.z;
+		let radius = Math.sqrt(dX * dX + dY * dY + dZ * dZ);
+		let theta = Math.atan2(this._camera.position.x, this._camera.position.z); // equator angle around y-up axis
+		let phi = Math.acos(mathUtils.clamp(this._camera.position.y / radius, -1, 1)); // polar angle
+		this._spherical = { radius: radius, theta: theta, phi: phi };
+
 		this._bindEvens();
 		this.setEventHandler();
 	}
 	setEventHandler() {
+		this.domElement.addEventListener('contextmenu', this._contextMenuHandler, false);
 		this.domElement.addEventListener('mousedown', this._mouseDownHandler, false);
 		this.domElement.addEventListener('wheel', this._mouseWheelHandler, false);
 
@@ -60,8 +75,11 @@ export class CameraController extends EventEmitter {
 		window.addEventListener('keydown', this._onKeyDownHandler, false);
 	}
 	removeEventHandler() {
+		this.domElement.removeEventListener('contextmenu', this._contextMenuHandler, false);
 		this.domElement.removeEventListener('mousedown', this._mouseDownHandler, false);
 		this.domElement.removeEventListener('wheel', this._mouseWheelHandler, false);
+		this.domElement.removedEventListener('mousemove', this._mouseMoveHandler, false);
+		this.domElement.removeEventListener('mouseup', this._mouseUpHandler, false);
 
 		this.domElement.removeEventListener('touchstart', this._touchStartHandler, false);
 		this.domElement.removeEventListener('touchend', this._touchEndHandler, false);
@@ -69,9 +87,22 @@ export class CameraController extends EventEmitter {
 
 		window.removeEventListener('keydown', this._onKeyDownHandler, false);
 	}
+	update() {
+		let s = this._spherical;
+		var sinPhiRadius = Math.sin(s.phi) * s.radius;
+
+		this._camera.position.x = sinPhiRadius * Math.sin(s.theta) + this.target.x;
+		this._camera.position.y = Math.cos(s.phi) * s.radius + this.target.y;
+		this._camera.position.z = sinPhiRadius * Math.cos(s.theta) + this.target.z;
+
+		this._camera.lookAt(this.target);
+	}
 	_bindEvens() {
+		this._contextMenuHandler = this._contextMenuHandler.bind(this);
 		this._mouseDownHandler = this._mouseDownHandler.bind(this);
-		this._mouseWheelHandler = this._mouseDownHandler.bind(this);
+		this._mouseWheelHandler = this._mouseWheelHandler.bind(this);
+		this._mouseMoveHandler = this._mouseMoveHandler.bind(this);
+		this._mouseUpHandler = this._mouseUpHandler.bind(this);
 
 		this._touchStartHandler = this._touchStartHandler.bind(this);
 		this._touchEndHandler = this._touchEndHandler.bind(this);
@@ -79,16 +110,81 @@ export class CameraController extends EventEmitter {
 
 		this._onKeyDownHandler = this._onKeyDownHandler.bind(this);
 	}
+
+	_contextMenuHandler(event) {
+		if (!this.isEnabled) return;
+
+		event.preventDefault();
+	}
 	_mouseDownHandler(event) {
 		if (!this.isEnabled) return;
 
-		console.log(event.button);
+		if (event.button == 0) {
+			this.state = 'rotate';
+			this._rotateStart = { x: event.clientX, y: event.clientY };
+		} else {
+			this.state = 'pan';
+			this._panStart = { x: event.clientX, y: event.clientY };
+		}
+
+		this.domElement.addEventListener('mousemove', this._mouseMoveHandler, false);
+		this.domElement.addEventListener('mouseup', this._mouseUpHandler, false);
 	}
-	_mouseUpHandler(event) {
+	_mouseUpHandler() {
+		this.domElement.removeEventListener('mousemove', this._mouseMoveHandler, false);
+		this.domElement.removeEventListener('mouseup', this._mouseUpHandler, false);
+	}
+	_mouseMoveHandler(event) {
 		if (!this.isEnabled) return;
+
+		if (this.state === 'rotate') {
+			this._rotateEnd = { x: event.clientX, y: event.clientY };
+			this._roatteDelta = {
+				x: this._rotateEnd.x - this._rotateStart.x,
+				y: this._rotateEnd.y - this._rotateStart.y
+			};
+
+			this._spherical.theta += -this._roatteDelta.x / this.domElement.clientWidth * Math.PI;
+			this._spherical.phi += -this._roatteDelta.y / this.domElement.clientHeight * Math.PI;
+
+			this._rotateStart = { x: this._rotateEnd.x, y: this._rotateEnd.y };
+		} else if (this.state === 'pan') {
+			this._panEnd = { x: event.clientX, y: event.clientY };
+			this._panDelta = {
+				x: this._panEnd.x - this._panStart.x,
+				y: this._panEnd.y - this._panStart.y
+			};
+
+			let xDir = vec3.create();
+			let yDir = vec3.create();
+			let zDir = vec3.create();
+			zDir[0] = this.target.x - this._camera.position.x;
+			zDir[1] = this.target.y - this._camera.position.y;
+			zDir[2] = this.target.z - this._camera.position.z;
+			vec3.normalize(zDir, zDir);
+
+			vec3.cross(xDir, zDir, [0, 1, 0]);
+			vec3.cross(yDir, xDir, zDir);
+
+			this.target.x += xDir[0] * this._panDelta.x + yDir[0] * this._panDelta.y;
+			this.target.y += xDir[1] * this._panDelta.x + yDir[1] * this._panDelta.y;
+			this.target.z += xDir[2] * this._panDelta.x + yDir[2] * this._panDelta.y;
+
+			this._panStart = { x: this._panEnd.x, y: this._panEnd.y };
+		}
+		this.update();
 	}
-	_mouseMoveHandler(event) {}
-	_mouseWheelHandler(event) {}
+	_mouseWheelHandler(event) {
+		if (event.deltaY > 0) {
+			this._spherical.radius *= 1.05;
+		} else {
+			this._spherical.radius *= 0.95;
+		}
+
+		this._spherical.radius = mathUtils.clamp(this._spherical.radius, this.minDistance, this.maxDistance);
+
+		this.update();
+	}
 
 	_touchStartHandler(event) {}
 
