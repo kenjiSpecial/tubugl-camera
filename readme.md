@@ -2,7 +2,7 @@
 
 [![NPM version][npm-image]][npm-url] 
 
-camera and camera controller for tubugl. camera module returns projection matrix and view matrix.
+camera and camera controller for [tubugl](https://github.com/kenjiSpecial/tubugl). camera module returns projection matrix and view matrix.
 
 ![alt text](http://www.ozone3d.net/public/jegx/201411/opengl_4x4_matrix_column_major.jpg)
 
