@@ -13,6 +13,9 @@ https://github.com/mrdoob/three.js/blob/master/examples/js/controls/OrbitControl
 
 - [gl-matrix](https://github.com/toji/gl-matrix)
 
+## TODO
+
+- [ ] camera controller for mobile touch events
 
 [npm-image]: https://img.shields.io/npm/v/tubugl-camera.svg?style=flat-square
 [npm-url]: https://www.npmjs.com/package/tubugl-camera
