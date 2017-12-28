@@ -6,21 +6,26 @@
   "license": "MIT",
   "scripts": {
     "app00": "parcel examples/app00/index.html --no-hmr",
-    "app01": "parcel examples/app01/index.html --no-hmr"
+    "dist00": "parcel build examples/app00/index.html -d docs/app00 --public-url ./",
+    "screenshot00": "node ./node/screenshot.js --dir=app00",
+    "app01": "parcel examples/app01/index.html --no-hmr",
+    "dist01": "parcel build examples/app01/index.html -d docs/app01 --public-url ./",
+    "screenshot01": "node ./node/screenshot.js --dir=app01",
+    "docs": "python -m SimpleHTTPServer 8000"
   },
   "dependencies": {
     "dat.gui": "https://github.com/dataarts/dat.gui.git",
     "gl-matrix": "^2.4.0",
     "gsap": "^1.20.3",
     "stats.js": "https://github.com/mrdoob/stats.js.git",
-    "tubugl-3d-shape": "^1.0.0",
+    "tubugl-3d-shape": "^1.1.0",
     "tubugl-core": "^1.0.0",
     "tubugl-math": "^1.1.6",
     "tubugl-utils": "^1.0.1",
     "wolfy87-eventemitter": "^5.2.4"
   },
   "devDependencies": {
-    "parcel-bundler": "^1.2.1",
-    "prettier": "^1.9.2"
+    "minimist": "^1.2.0",
+    "puppeteer": "^0.13.0"
   }
 }

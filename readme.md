@@ -15,7 +15,7 @@ https://github.com/mrdoob/three.js/blob/master/examples/js/controls/OrbitControl
 
 ## TODO
 
-- [ ] camera controller for mobile touch events
+- [x] camera controller for mobile touch events
 
 [npm-image]: https://img.shields.io/npm/v/tubugl-camera.svg?style=flat-square
 [npm-url]: https://www.npmjs.com/package/tubugl-camera
