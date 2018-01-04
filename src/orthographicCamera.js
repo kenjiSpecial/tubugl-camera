@@ -1,19 +1,26 @@
 const EventEmitter = require('wolfy87-eventemitter');
-
 import { mat4 } from 'gl-matrix/src/gl-matrix';
 import { Vector3 } from 'tubugl-math/src/vector3';
 import { Euler } from 'tubugl-math/src/euler';
 
-export class PerspectiveCamera extends EventEmitter {
-	constructor(width = window.innerWidth, height = window.innerHeight, fov = 60, near = 1, far = 1000) {
+export class OrthographicCamera extends EventEmitter {
+	constructor(
+		left = -window.innerWidth / 2,
+		right = window.innerWidth / 2,
+		top = window.innerHeight / 2,
+		bottom = -window.innerHeight / 2,
+		near = 1,
+		far = 1000
+	) {
 		super();
 
 		this.position = new Vector3();
 		this.rotation = new Euler();
 
-		this._fov = fov;
-		this._width = width;
-		this._height = height;
+		this._left = left;
+		this._right = right;
+		this._top = top;
+		this._bottom = bottom;
 		this._near = near;
 		this._far = far;
 
@@ -27,7 +34,6 @@ export class PerspectiveCamera extends EventEmitter {
 			this._updateProjectionMatrix();
 		}, 0);
 	}
-
 	update(forceUpdate = false) {
 		this._updateViewMatrix(forceUpdate);
 
@@ -75,22 +81,18 @@ export class PerspectiveCamera extends EventEmitter {
 
 	log() {
 		console.log(
-			`[PerspectiveCamera] position: {x: ${this.position.x}, y: ${this.position.y}, z: ${this.position.z} }`
+			`[orthographicCamera] position: {x: ${this.position.x}, y: ${this.position.y}, z: ${this.position.z} }`
 		);
 		console.log(
-			`[PerspectiveCamera] rotation: {x: ${this.rotation.x}, y: ${this.rotation.y}, z: ${this.rotation.z} }`
+			`[orthographicCamera] rotation: {x: ${this.rotation.x}, y: ${this.rotation.y}, z: ${this.rotation.z} }`
 		);
 	}
 
-	updateSize(width, height) {
-		this._width = width;
-		this._height = height;
-
-		this._updateProjectionMatrix();
-	}
-
-	updateFov(fov) {
-		this._fov = fov;
+	updateSize(left, right, top, bottom) {
+		this._left = left;
+		this._right = right;
+		this._top = top;
+		this._bottom = bottom;
 
 		this._updateProjectionMatrix();
 	}
@@ -103,13 +105,7 @@ export class PerspectiveCamera extends EventEmitter {
 	}
 
 	_updateProjectionMatrix() {
-		mat4.perspective(
-			this.projectionMatrix,
-			this._fov / 180 * Math.PI,
-			this._width / this._height,
-			this._near,
-			this._far
-		);
+		mat4.ortho(this.projectionMatrix, this._left, this._right, this._bottom, this._top, this._near, this._far);
 	}
 
 	_updateViewMatrix(forceUpdate = false) {

@@ -9,7 +9,7 @@ const Stats = require('stats.js');
 import { DEPTH_TEST } from 'tubugl-constants';
 import { ProceduralRoundingCube } from 'tubugl-3d-shape';
 import { NormalHelper } from 'tubugl-helper';
-import { PerspectiveCamera } from '../../index';
+import { PerspectiveCamera, OrthographicCamera } from '../../index';
 
 export default class App {
 	constructor(params = {}) {
@@ -47,23 +47,19 @@ export default class App {
 		gl.viewport(0, 0, this._width, this._height);
 
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-		this._perspectiveCamera
+		this[this._cameraType]
 			.updatePosition(
-				this._perspectiveCamera.rad *
-					Math.sin(this._perspectiveCamera.theta) *
-					Math.cos(this._perspectiveCamera.phi),
-				this._perspectiveCamera.rad * Math.sin(this._perspectiveCamera.phi),
-				this._perspectiveCamera.rad *
-					Math.cos(this._perspectiveCamera.theta) *
-					Math.cos(this._perspectiveCamera.phi)
+				this._camera.rad * Math.sin(this._camera.theta) * Math.cos(this._camera.phi),
+				this._camera.rad * Math.sin(this._camera.phi),
+				this._camera.rad * Math.cos(this._camera.theta) * Math.cos(this._camera.phi)
 			)
 			.lookAt([0, 0, 0]);
 
-		this._box.render(this._perspectiveCamera);
+		this._box.render(this[this._cameraType]);
 		// console.log(this._box.position);
 		// this._box.position.x = 100;
 		// console.log(this._position);
-		this._normalHelper.render(this._perspectiveCamera);
+		this._normalHelper.render(this[this._cameraType]);
 	}
 
 	animateOut() {
@@ -74,8 +70,8 @@ export default class App {
 		if (!this._isMouseDown) return;
 
 		const PI_TWO = Math.PI * 2;
-		this._perspectiveCamera.theta += (mouse.x - this._prevMouse.x) * -PI_TWO;
-		this._perspectiveCamera.phi += (mouse.y - this._prevMouse.y) * -PI_TWO;
+		this._camera.theta += (mouse.x - this._prevMouse.x) * -PI_TWO;
+		this._camera.phi += (mouse.y - this._prevMouse.y) * -PI_TWO;
 
 		this._prevMouse = mouse;
 	}
@@ -118,6 +114,7 @@ export default class App {
 
 		this._box.resize(this._width, this._height);
 		this._perspectiveCamera.updateSize(this._width, this._height);
+		this._orthographicCamera.updateSize(-this._width / 2, this._width / 2, this._height / 2, -this._height / 2);
 	}
 
 	destroy() {}
@@ -139,15 +136,27 @@ export default class App {
 	}
 
 	_makeCamera() {
+		this._cameraType = '_perspectiveCamera';
 		this._perspectiveCamera = new PerspectiveCamera(window.innerWidth, window.innerHeight, 60, 1, 2000);
-		this._perspectiveCamera.theta = 0;
-		this._perspectiveCamera.phi = 0;
-		this._perspectiveCamera.rad = 800;
+		this._orthographicCamera = new OrthographicCamera(
+			-window.innerWidth / 2,
+			window.innerWidth / 2,
+			window.innerHeight / 2,
+			-window.innerHeight / 2,
+			1,
+			2000
+		);
+		this._camera = {
+			theta: 0,
+			phi: 0,
+			rad: 800
+		};
 	}
 
 	_addGui() {
 		this.gui = new dat.GUI();
 		this.playAndStopGui = this.gui.add(this, '_playAndStop').name('pause');
+		this.gui.add(this, '_cameraType', ['_perspectiveCamera', '_orthographicCamera']).name('cameraType');
 		this._boxGUIFolder = this.gui.addFolder('rounding  cube');
 		this._box.addGui(this._boxGUIFolder);
 		this._boxGUIFolder.open();
