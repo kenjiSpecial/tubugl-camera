@@ -2,14 +2,14 @@
  * make demo with rendering of plane(webgl)
  */
 
-const dat = require('../vendor/dat.gui.min');
+const dat = require('dat.gui/build/dat.gui.min');
 const TweenLite = require('gsap/TweenLite');
 const Stats = require('stats.js');
 
 import { DEPTH_TEST } from 'tubugl-constants';
 import { ProceduralRoundingCube } from 'tubugl-3d-shape';
-import { NormalHelper } from 'tubugl-helper';
-import { PerspectiveCamera } from '../../index';
+import { NormalHelper, GridHelper } from 'tubugl-helper';
+import { PerspectiveCamera, CameraController } from '../../index';
 
 export default class App {
 	constructor(params = {}) {
@@ -25,6 +25,7 @@ export default class App {
 		this._makeBox();
 		this._makeHelper();
 		this._makeCamera();
+		this._makeCameraController();
 
 		this.resize(this._width, this._height);
 
@@ -45,25 +46,19 @@ export default class App {
 
 		let gl = this.gl;
 		gl.viewport(0, 0, this._width, this._height);
-
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-		this._perspectiveCamera
-			.updatePosition(
-				this._perspectiveCamera.rad *
-					Math.sin(this._perspectiveCamera.theta) *
-					Math.cos(this._perspectiveCamera.phi),
-				this._perspectiveCamera.rad * Math.sin(this._perspectiveCamera.phi),
-				this._perspectiveCamera.rad *
-					Math.cos(this._perspectiveCamera.theta) *
-					Math.cos(this._perspectiveCamera.phi)
-			)
-			.lookAt([0, 0, 0]);
 
-		this._box.render(this._perspectiveCamera);
-		// console.log(this._box.position);
-		// this._box.position.x = 100;
-		// console.log(this._position);
-		this._normalHelper.render(this._perspectiveCamera);
+		this._camera.time += 1 / 60;
+
+		// this._camera.position.x = 800 * Math.cos(this._camera.time);
+		// this._camera.position.z = 800 * Math.sin(this._camera.time);
+
+		// this._camera.lookAt([0, 0, 0]);
+
+		this._camera.update();
+		this._box.render(this._camera);
+		this._normalHelper.render(this._camera);
+		this._gridHelper.render(this._camera);
 	}
 
 	animateOut() {
@@ -74,8 +69,8 @@ export default class App {
 		if (!this._isMouseDown) return;
 
 		const PI_TWO = Math.PI * 2;
-		this._perspectiveCamera.theta += (mouse.x - this._prevMouse.x) * -PI_TWO;
-		this._perspectiveCamera.phi += (mouse.y - this._prevMouse.y) * -PI_TWO;
+		this._camera.theta += (mouse.x - this._prevMouse.x) * -PI_TWO;
+		this._camera.phi += (mouse.y - this._prevMouse.y) * -PI_TWO;
 
 		this._prevMouse = mouse;
 	}
@@ -117,7 +112,7 @@ export default class App {
 		this.gl.viewport(0, 0, this._width, this._height);
 
 		this._box.resize(this._width, this._height);
-		this._perspectiveCamera.updateSize(this._width, this._height);
+		this._camera.updateSize(this._width, this._height);
 	}
 
 	destroy() {}
@@ -136,13 +131,16 @@ export default class App {
 
 	_makeHelper() {
 		this._normalHelper = new NormalHelper(this.gl, this._box);
+		this._gridHelper = new GridHelper(this.gl, 1000, 1000, 20, 20);
 	}
-
+	_makeCameraController() {
+		this._cameraController = new CameraController(this._camera, this.canvas);
+		this._cameraController.minDistance = 300;
+		this._cameraController.maxDistance = 1000;
+	}
 	_makeCamera() {
-		this._perspectiveCamera = new PerspectiveCamera(window.innerWidth, window.innerHeight, 60, 1, 2000);
-		this._perspectiveCamera.theta = 0;
-		this._perspectiveCamera.phi = 0;
-		this._perspectiveCamera.rad = 800;
+		this._camera = new PerspectiveCamera(window.innerWidth, window.innerHeight, 60, 1, 2000);
+		this._camera.position.z = 800;
 	}
 
 	_addGui() {
