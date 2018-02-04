@@ -1,6 +1,6 @@
 {
   "name": "tubugl-camera",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "prototype tool with parcel",
   "main": "index.js",
   "license": "MIT",
@@ -10,8 +10,10 @@
     "screenshot00": "node ./node/screenshot.js --dir=app00",
     "app01": "parcel examples/app01/index.html --no-hmr",
     "dist01": "parcel build examples/app01/index.html -d docs/app01 --public-url ./",
-    "app02": "parcel examples/app02/index.html --no-hmr",
     "screenshot01": "node ./node/screenshot.js --dir=app01",
+    "app02": "parcel examples/app02/index.html --no-hmr",
+    "dist02": "parcel build examples/app02/index.html -d docs/app02 --public-url ./",
+    "screenshot02": "node ./node/screenshot.js --dir=app02",
     "docs": "python -m SimpleHTTPServer 8000"
   },
   "dependencies": {

@@ -87,7 +87,7 @@ export class CameraController extends EventEmitter {
 		this.domElement.removeEventListener('mousedown', this._mouseDownHandler, false);
 		this.domElement.removeEventListener('wheel', this._mouseWheelHandler, false);
 		this.domElement.removedEventListener('mousemove', this._mouseMoveHandler, false);
-		this.domElement.removeEventListener('mouseup', this._mouseUpHandler, false);
+		window.removeEventListener('mouseup', this._mouseUpHandler, false);
 
 		this.domElement.removeEventListener('touchstart', this._touchStartHandler, false);
 		this.domElement.removeEventListener('touchend', this._touchEndHandler, false);
@@ -138,11 +138,11 @@ export class CameraController extends EventEmitter {
 		}
 
 		this.domElement.addEventListener('mousemove', this._mouseMoveHandler, false);
-		this.domElement.addEventListener('mouseup', this._mouseUpHandler, false);
+		window.addEventListener('mouseup', this._mouseUpHandler, false);
 	}
 	_mouseUpHandler() {
 		this.domElement.removeEventListener('mousemove', this._mouseMoveHandler, false);
-		this.domElement.removeEventListener('mouseup', this._mouseUpHandler, false);
+		window.removeEventListener('mouseup', this._mouseUpHandler, false);
 	}
 	_mouseMoveHandler(event) {
 		if (!this.isEnabled) return;
