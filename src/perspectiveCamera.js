@@ -1,5 +1,4 @@
-const EventEmitter = require('wolfy87-eventemitter');
-
+import EventEmitter from 'wolfy87-eventemitter';
 import { mat4 } from 'gl-matrix/src/gl-matrix';
 import { Vector3 } from 'tubugl-math/src/vector3';
 import { Euler } from 'tubugl-math/src/euler';

@@ -1,6 +1,6 @@
 {
   "name": "tubugl-camera",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "prototype tool with parcel",
   "cjs": "build/tubu-camera.cjs.js",
   "module": "build/tubu-camera.esm.js",

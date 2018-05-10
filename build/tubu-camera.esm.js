@@ -1,10 +1,10 @@
+import EventEmitter from 'wolfy87-eventemitter';
 import { mat4 } from 'gl-matrix/src/gl-matrix';
 import { Vector3 } from 'tubugl-math/src/vector3';
 import { Euler } from 'tubugl-math/src/euler';
+import TweenLite from 'gsap/TweenLite';
 import { mathUtils } from 'tubugl-utils';
 import { vec3 } from 'gl-matrix';
-
-const EventEmitter = require('wolfy87-eventemitter');
 
 class PerspectiveCamera extends EventEmitter {
 	constructor(width = window.innerWidth, height = window.innerHeight, fov = 60, near = 1, far = 1000) {
@@ -130,10 +130,7 @@ class PerspectiveCamera extends EventEmitter {
 	}
 }
 
-const EventEmitter$1 = require('wolfy87-eventemitter');
-const TweenLite = require('gsap/TweenLite');
-
-class CameraController extends EventEmitter$1 {
+class CameraController extends EventEmitter {
 	constructor(camera, domElement = document.body) {
 		super();
 
@@ -172,7 +169,13 @@ class CameraController extends EventEmitter$1 {
 		this.enableKeys = true;
 
 		// The four arrow keys
-		this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40, SHIFT: 16 };
+		this.keys = {
+			LEFT: 37,
+			UP: 38,
+			RIGHT: 39,
+			BOTTOM: 40,
+			SHIFT: 16
+		};
 
 		// for reset
 		this.originTarget = new Vector3();
@@ -180,9 +183,18 @@ class CameraController extends EventEmitter$1 {
 
 		this._isShiftDown = false;
 
-		this._rotateStart = { x: null, y: null };
-		this._rotateEnd = { x: null, y: null };
-		this._roatteDelta = { x: null, y: null };
+		this._rotateStart = {
+			x: null,
+			y: null
+		};
+		this._rotateEnd = {
+			x: null,
+			y: null
+		};
+		this._roatteDelta = {
+			x: null,
+			y: null
+		};
 
 		let dX = this._camera.position.x;
 		let dY = this._camera.position.y;
@@ -190,7 +202,11 @@ class CameraController extends EventEmitter$1 {
 		let radius = Math.sqrt(dX * dX + dY * dY + dZ * dZ);
 		let theta = Math.atan2(this._camera.position.x, this._camera.position.z); // equator angle around y-up axis
 		let phi = Math.acos(mathUtils.clamp(this._camera.position.y / radius, -1, 1)); // polar angle
-		this._spherical = { radius: radius, theta: theta, phi: phi };
+		this._spherical = {
+			radius: radius,
+			theta: theta,
+			phi: phi
+		};
 
 		this._pan = {
 			axis: {}
@@ -260,10 +276,16 @@ class CameraController extends EventEmitter$1 {
 
 		if (event.button == 0) {
 			this.state = 'rotate';
-			this._rotateStart = { x: event.clientX, y: event.clientY };
+			this._rotateStart = {
+				x: event.clientX,
+				y: event.clientY
+			};
 		} else {
 			this.state = 'pan';
-			this._panStart = { x: event.clientX, y: event.clientY };
+			this._panStart = {
+				x: event.clientX,
+				y: event.clientY
+			};
 		}
 
 		this.domElement.addEventListener('mousemove', this._mouseMoveHandler, false);
@@ -277,7 +299,10 @@ class CameraController extends EventEmitter$1 {
 		if (!this.isEnabled) return;
 
 		if (this.state === 'rotate') {
-			this._rotateEnd = { x: event.clientX, y: event.clientY };
+			this._rotateEnd = {
+				x: event.clientX,
+				y: event.clientY
+			};
 			this._roatteDelta = {
 				x: this._rotateEnd.x - this._rotateStart.x,
 				y: this._rotateEnd.y - this._rotateStart.y
@@ -285,16 +310,25 @@ class CameraController extends EventEmitter$1 {
 
 			this._updateRotateHandler();
 
-			this._rotateStart = { x: this._rotateEnd.x, y: this._rotateEnd.y };
+			this._rotateStart = {
+				x: this._rotateEnd.x,
+				y: this._rotateEnd.y
+			};
 		} else if (this.state === 'pan') {
-			this._panEnd = { x: event.clientX, y: event.clientY };
+			this._panEnd = {
+				x: event.clientX,
+				y: event.clientY
+			};
 			this._panDelta = {
 				x: -0.5 * (this._panEnd.x - this._panStart.x),
 				y: 0.5 * (this._panEnd.y - this._panStart.y)
 			};
 
 			this._updatePanHandler();
-			this._panStart = { x: this._panEnd.x, y: this._panEnd.y };
+			this._panStart = {
+				x: this._panEnd.x,
+				y: this._panEnd.y
+			};
 		}
 		this.update();
 	}
@@ -315,7 +349,10 @@ class CameraController extends EventEmitter$1 {
 		switch (event.touches.length) {
 			case 1:
 				this.state = 'rotate';
-				this._rotateStart = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+				this._rotateStart = {
+					x: event.touches[0].clientX,
+					y: event.touches[0].clientY
+				};
 				break;
 			case 2:
 				this.state = 'zoom';
@@ -339,7 +376,10 @@ class CameraController extends EventEmitter$1 {
 		switch (event.touches.length) {
 			case 1:
 				if (this.state !== 'rotate') return;
-				this._rotateEnd = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+				this._rotateEnd = {
+					x: event.touches[0].clientX,
+					y: event.touches[0].clientY
+				};
 				this._roatteDelta = {
 					x: (this._rotateEnd.x - this._rotateStart.x) * 0.5,
 					y: (this._rotateEnd.y - this._rotateStart.y) * 0.5
@@ -347,7 +387,10 @@ class CameraController extends EventEmitter$1 {
 
 				this._updateRotateHandler();
 
-				this._rotateStart = { x: this._rotateEnd.x, y: this._rotateEnd.y };
+				this._rotateStart = {
+					x: this._rotateEnd.x,
+					y: this._rotateEnd.y
+				};
 				break;
 			case 2:
 				if (this.state !== 'zoom') return;
@@ -383,7 +426,10 @@ class CameraController extends EventEmitter$1 {
 				};
 
 				this._updatePanHandler();
-				this._panStart = { x: this._panEnd.x, y: this._panEnd.y };
+				this._panStart = {
+					x: this._panEnd.x,
+					y: this._panEnd.y
+				};
 				break;
 		}
 
@@ -415,10 +461,16 @@ class CameraController extends EventEmitter$1 {
 		}
 
 		if (!this._isShiftDown) {
-			this._panDelta = { x: dX, y: dY };
+			this._panDelta = {
+				x: dX,
+				y: dY
+			};
 			this._updatePanHandler();
 		} else {
-			this._roatteDelta = { x: -dX, y: dY };
+			this._roatteDelta = {
+				x: -dX,
+				y: dY
+			};
 			this._updateRotateHandler();
 		}
 
@@ -453,9 +505,7 @@ class CameraController extends EventEmitter$1 {
 	}
 }
 
-const EventEmitter$2 = require('wolfy87-eventemitter');
-
-class OrthographicCamera extends EventEmitter$2 {
+class OrthographicCamera extends EventEmitter {
 	constructor(
 		left = -window.innerWidth / 2,
 		right = window.innerWidth / 2,
