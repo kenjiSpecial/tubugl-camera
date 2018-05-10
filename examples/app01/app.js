@@ -6,10 +6,20 @@ const dat = require('../vendor/dat.gui.min');
 const TweenLite = require('gsap/TweenLite');
 const Stats = require('stats.js');
 
-import { DEPTH_TEST } from 'tubugl-constants';
-import { ProceduralRoundingCube } from 'tubugl-3d-shape';
-import { NormalHelper, GridHelper } from 'tubugl-helper';
-import { PerspectiveCamera, CameraController } from '../../index';
+import {
+	DEPTH_TEST
+} from 'tubugl-constants';
+import {
+	ProceduralRoundingCube
+} from 'tubugl-3d-shape';
+import {
+	NormalHelper,
+	GridHelper
+} from 'tubugl-helper';
+import {
+	PerspectiveCamera,
+	CameraController
+} from '../../src/index';
 
 export default class App {
 	constructor(params = {}) {

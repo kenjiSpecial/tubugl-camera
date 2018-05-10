@@ -6,10 +6,19 @@ const dat = require('../vendor/dat.gui.min');
 const TweenLite = require('gsap/TweenLite');
 const Stats = require('stats.js');
 
-import { DEPTH_TEST } from 'tubugl-constants';
-import { ProceduralRoundingCube } from 'tubugl-3d-shape';
-import { NormalHelper } from 'tubugl-helper';
-import { PerspectiveCamera, OrthographicCamera } from '../../index';
+import {
+	DEPTH_TEST
+} from 'tubugl-constants';
+import {
+	ProceduralRoundingCube
+} from 'tubugl-3d-shape';
+import {
+	NormalHelper
+} from 'tubugl-helper';
+import {
+	PerspectiveCamera,
+	OrthographicCamera
+} from '../../src/index';
 
 export default class App {
 	constructor(params = {}) {
@@ -138,11 +147,9 @@ export default class App {
 	_makeCamera() {
 		this._cameraType = '_perspectiveCamera';
 		this._perspectiveCamera = new PerspectiveCamera(window.innerWidth, window.innerHeight, 60, 1, 2000);
-		this._orthographicCamera = new OrthographicCamera(
-			-window.innerWidth / 2,
+		this._orthographicCamera = new OrthographicCamera(-window.innerWidth / 2,
 			window.innerWidth / 2,
-			window.innerHeight / 2,
-			-window.innerHeight / 2,
+			window.innerHeight / 2, -window.innerHeight / 2,
 			1,
 			2000
 		);

@@ -6,10 +6,18 @@ const dat = require('../vendor/dat.gui.min');
 const TweenLite = require('gsap/TweenLite');
 const Stats = require('stats.js');
 
-import { DEPTH_TEST } from 'tubugl-constants';
-import { ProceduralRoundingCube } from 'tubugl-3d-shape';
-import { NormalHelper } from 'tubugl-helper';
-import { PerspectiveCamera } from '../../index';
+import {
+	DEPTH_TEST
+} from 'tubugl-constants';
+import {
+	ProceduralRoundingCube
+} from 'tubugl-3d-shape';
+import {
+	NormalHelper
+} from 'tubugl-helper';
+import {
+	PerspectiveCamera
+} from '../../src/index';
 
 export default class App {
 	constructor(params = {}) {
@@ -50,12 +58,12 @@ export default class App {
 		this._perspectiveCamera
 			.updatePosition(
 				this._perspectiveCamera.rad *
-					Math.sin(this._perspectiveCamera.theta) *
-					Math.cos(this._perspectiveCamera.phi),
+				Math.sin(this._perspectiveCamera.theta) *
+				Math.cos(this._perspectiveCamera.phi),
 				this._perspectiveCamera.rad * Math.sin(this._perspectiveCamera.phi),
 				this._perspectiveCamera.rad *
-					Math.cos(this._perspectiveCamera.theta) *
-					Math.cos(this._perspectiveCamera.phi)
+				Math.cos(this._perspectiveCamera.theta) *
+				Math.cos(this._perspectiveCamera.phi)
 			)
 			.lookAt([0, 0, 0]);
 
@@ -129,9 +137,9 @@ export default class App {
 
 	_makeBox() {
 		let side = 300;
-		this._box = new ProceduralRoundingCube(this.gl, side, side, side, 100, 10, 10, 10, {
+		this._box = new ProceduralRoundingCube(this.gl, {
 			isWire: true
-		});
+		}, side, side, side, 100, 10, 10, 10, );
 	}
 
 	_makeHelper() {
