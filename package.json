@@ -1,9 +1,9 @@
 {
   "name": "tubugl-camera",
-  "version": "1.4.1",
-  "description": "prototype tool with parcel",
+  "version": "1.4.3",
+  "description": "camera for tubugl",
   "cjs": "build/tubu-camera.cjs.js",
-  "module": "build/tubu-camera.esm.js",
+  "esm": "build/tubu-camera.esm.js",
   "main": "build/tubu-camera.js",
   "libName": "Tubu",
   "license": "MIT",
@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "gl-matrix": "^2.4.0",
-    "tubugl-core": "^1.4.5",
+    "tubugl-core": "^1.5.0",
     "tubugl-math": "^1.1.10",
     "tubugl-utils": "^1.0.9",
     "wolfy87-eventemitter": "^5.2.4"

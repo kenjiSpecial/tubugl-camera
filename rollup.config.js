@@ -36,7 +36,7 @@ export default [
 	{
 		input: './src/index.js',
 		output: [{
-			file: pkg.module,
+			file: pkg.esm,
 			format: 'es'
 		}]
 	}
