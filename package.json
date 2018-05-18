@@ -1,6 +1,6 @@
 {
   "name": "tubugl-camera",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "camera for tubugl",
   "cjs": "build/tubu-camera.cjs.js",
   "esm": "build/tubu-camera.esm.js",
@@ -23,7 +23,7 @@
   "dependencies": {
     "gl-matrix": "^2.4.0",
     "tubugl-core": "^1.5.0",
-    "tubugl-math": "^1.1.10",
+    "tubugl-math": "^1.2.1",
     "tubugl-utils": "^1.0.9",
     "wolfy87-eventemitter": "^5.2.4"
   },

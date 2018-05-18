@@ -1,7 +1,6 @@
 import EventEmitter from 'wolfy87-eventemitter';
 import { mat4 } from 'gl-matrix/src/gl-matrix';
-import { Vector3 } from 'tubugl-math/src/vector3';
-import { Euler } from 'tubugl-math/src/euler';
+import { Euler, Vector3 } from 'tubugl-math';
 import TweenLite from 'gsap/TweenLite';
 import { mathUtils } from 'tubugl-utils';
 import { vec3 } from 'gl-matrix';
@@ -102,6 +101,19 @@ class PerspectiveCamera extends EventEmitter {
 		if (far) this._far = far;
 
 		this._updateProjectionMatrix();
+	}
+
+	updateMatrix() {
+		this.updateProjectionMatrix();
+		this.updateViewMatrix();
+	}
+
+	updateProjectionMatrix() {
+		this._updateProjectionMatrix();
+	}
+
+	updateViewMatrix() {
+		this._updateViewMatrix();
 	}
 
 	_updateProjectionMatrix() {
@@ -604,6 +616,19 @@ class OrthographicCamera extends EventEmitter {
 		if (far) this._far = far;
 
 		this._updateProjectionMatrix();
+	}
+	
+	updateMatrix() {
+		this.updateProjectionMatrix();
+		this.updateViewMatrix();
+	}
+
+	updateProjectionMatrix() {
+		this._updateProjectionMatrix();
+	}
+
+	updateViewMatrix() {
+		this._updateViewMatrix();
 	}
 
 	_updateProjectionMatrix() {

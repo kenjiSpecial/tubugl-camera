@@ -135,9 +135,9 @@ export default class App {
 
 	_makeBox() {
 		let side = 300;
-		this._box = new ProceduralRoundingCube(this.gl, side, side, side, 100, 10, 10, 10, {
+		this._box = new ProceduralRoundingCube(this.gl, {
 			isWire: true
-		});
+		}, side, side, side, 100, 10, 10, 10);
 	}
 
 	_makeHelper() {

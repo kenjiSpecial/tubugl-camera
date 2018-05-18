@@ -3,7 +3,7 @@ import TweenLite from 'gsap/TweenLite';
 
 import {
 	Vector3
-} from 'tubugl-math/src/vector3';
+} from 'tubugl-math';
 import {
 	mathUtils
 } from 'tubugl-utils';

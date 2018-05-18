@@ -3,11 +3,9 @@ import {
 	mat4
 } from 'gl-matrix/src/gl-matrix';
 import {
+	Euler,
 	Vector3
-} from 'tubugl-math/src/vector3';
-import {
-	Euler
-} from 'tubugl-math/src/euler';
+} from 'tubugl-math';
 
 export class OrthographicCamera extends EventEmitter {
 	constructor(
@@ -108,6 +106,19 @@ export class OrthographicCamera extends EventEmitter {
 		if (far) this._far = far;
 
 		this._updateProjectionMatrix();
+	}
+	
+	updateMatrix() {
+		this.updateProjectionMatrix();
+		this.updateViewMatrix();
+	}
+
+	updateProjectionMatrix() {
+		this._updateProjectionMatrix();
+	}
+
+	updateViewMatrix() {
+		this._updateViewMatrix();
 	}
 
 	_updateProjectionMatrix() {

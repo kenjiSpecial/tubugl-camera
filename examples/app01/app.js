@@ -134,14 +134,14 @@ export default class App {
 
 	_makeBox() {
 		let side = 300;
-		this._box = new ProceduralRoundingCube(this.gl, side, side, side, 100, 10, 10, 10, {
+		this._box = new ProceduralRoundingCube(this.gl, {
 			isWire: true
-		});
+		}, side, side, side, 100, 10, 10, 10 );
 	}
 
 	_makeHelper() {
 		this._normalHelper = new NormalHelper(this.gl, this._box);
-		this._gridHelper = new GridHelper(this.gl, 1000, 1000, 20, 20);
+		this._gridHelper = new GridHelper(this.gl, {}, 1000, 1000, 20, 20);
 	}
 	_makeCameraController() {
 		this._cameraController = new CameraController(this._camera, this.canvas);
