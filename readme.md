@@ -19,3 +19,7 @@ https://github.com/mrdoob/three.js/blob/master/examples/js/controls/OrbitControl
 
 [npm-image]: https://img.shields.io/npm/v/tubugl-camera.svg?style=flat-square
 [npm-url]: https://www.npmjs.com/package/tubugl-camera
+
+## Resources
+
+http://www.geeks3d.com/20141114/glsl-4x4-matrix-mat4-fields/
