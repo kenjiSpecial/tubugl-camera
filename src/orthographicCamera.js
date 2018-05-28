@@ -18,6 +18,7 @@ export class OrthographicCamera extends EventEmitter {
 	) {
 		super();
 
+		this.type = 'orthographicCamera';
 		this.position = new Vector3();
 		this.rotation = new Euler();
 

@@ -11,6 +11,7 @@ export class PerspectiveCamera extends EventEmitter {
 	constructor(width = window.innerWidth, height = window.innerHeight, fov = 60, near = 1, far = 1000) {
 		super();
 
+		this.type = 'perspectiveCamera';
 		this.position = new Vector3();
 		this.rotation = new Euler();
 

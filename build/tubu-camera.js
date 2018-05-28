@@ -68,6 +68,7 @@
 
   		var _this = possibleConstructorReturn(this, (PerspectiveCamera.__proto__ || Object.getPrototypeOf(PerspectiveCamera)).call(this));
 
+  		_this.type = 'perspectiveCamera';
   		_this.position = new tubuglMath.Vector3();
   		_this.rotation = new tubuglMath.Euler();
 
@@ -647,6 +648,7 @@
 
   		var _this = possibleConstructorReturn(this, (OrthographicCamera.__proto__ || Object.getPrototypeOf(OrthographicCamera)).call(this));
 
+  		_this.type = 'orthographicCamera';
   		_this.position = new tubuglMath.Vector3();
   		_this.rotation = new tubuglMath.Euler();
 
