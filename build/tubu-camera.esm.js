@@ -141,6 +141,26 @@ class PerspectiveCamera extends EventEmitter {
 
 		return this;
 	}
+	
+	get fov(){
+		return this._fov;
+	}
+	
+	get width(){
+		return this._width;
+	}
+	
+	get height(){
+		return this._height;
+	}
+	
+	get near(){
+		return this._near;
+	}
+	
+	get far(){
+		return this._far;
+	}
 }
 
 class CameraController extends EventEmitter {

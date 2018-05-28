@@ -1,6 +1,6 @@
 {
   "name": "tubugl-camera",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "description": "camera for tubugl",
   "cjs": "build/tubu-camera.cjs.js",
   "esm": "build/tubu-camera.esm.js",

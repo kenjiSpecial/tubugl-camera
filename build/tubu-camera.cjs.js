@@ -218,6 +218,31 @@ var PerspectiveCamera = function (_EventEmitter) {
 
 			return this;
 		}
+	}, {
+		key: 'fov',
+		get: function get$$1() {
+			return this._fov;
+		}
+	}, {
+		key: 'width',
+		get: function get$$1() {
+			return this._width;
+		}
+	}, {
+		key: 'height',
+		get: function get$$1() {
+			return this._height;
+		}
+	}, {
+		key: 'near',
+		get: function get$$1() {
+			return this._near;
+		}
+	}, {
+		key: 'far',
+		get: function get$$1() {
+			return this._far;
+		}
 	}]);
 	return PerspectiveCamera;
 }(EventEmitter);
