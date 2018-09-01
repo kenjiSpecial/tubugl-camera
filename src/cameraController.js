@@ -1,15 +1,9 @@
 import EventEmitter from 'wolfy87-eventemitter';
 import TweenLite from 'gsap/TweenLite';
 
-import {
-	Vector3
-} from 'tubugl-math/src/vector3';
-import {
-	mathUtils
-} from 'tubugl-utils';
-import {
-	vec3
-} from 'gl-matrix';
+import { Vector3 } from 'tubugl-math/src/vector3';
+import { mathUtils } from 'tubugl-utils';
+import { vec3 } from 'gl-matrix';
 
 export class CameraController extends EventEmitter {
 	constructor(camera, domElement = document.body) {
@@ -124,6 +118,7 @@ export class CameraController extends EventEmitter {
 	}
 	update() {
 		let s = this._spherical;
+		// console.log(s.radius);
 		var sinPhiRadius = Math.sin(s.phi) * s.radius;
 
 		this._camera.position.x = sinPhiRadius * Math.sin(s.theta) + this.target.x;
@@ -376,12 +371,14 @@ export class CameraController extends EventEmitter {
 		vec3.cross(xDir, zDir, [0, 1, 0]);
 		vec3.cross(yDir, xDir, zDir);
 
-		this.target.x += xDir[0] * this._panDelta.x + yDir[0] * this._panDelta.y;
-		this.target.y += xDir[1] * this._panDelta.x + yDir[1] * this._panDelta.y;
-		this.target.z += xDir[2] * this._panDelta.x + yDir[2] * this._panDelta.y;
+		const scale = Math.max(this._spherical.radius / 2000, 0.001);
+
+		this.target.x += (xDir[0] * this._panDelta.x + yDir[0] * this._panDelta.y) * scale;
+		this.target.y += (xDir[1] * this._panDelta.x + yDir[1] * this._panDelta.y) * scale;
+		this.target.z += (xDir[2] * this._panDelta.x + yDir[2] * this._panDelta.y) * scale;
 	}
 	_updateRotateHandler() {
-		this._spherical.theta += -this._roatteDelta.x / this.domElement.clientWidth * Math.PI;
-		this._spherical.phi += -this._roatteDelta.y / this.domElement.clientHeight * Math.PI;
+		this._spherical.theta += (-this._roatteDelta.x / this.domElement.clientWidth) * Math.PI;
+		this._spherical.phi += (-this._roatteDelta.y / this.domElement.clientHeight) * Math.PI;
 	}
 }

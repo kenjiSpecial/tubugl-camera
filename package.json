@@ -1,6 +1,6 @@
 {
   "name": "tubugl-camera",
-  "version": "1.4.1",
+  "version": "1.4.3",
   "description": "prototype tool with parcel",
   "cjs": "build/tubu-camera.cjs.js",
   "module": "build/tubu-camera.esm.js",
@@ -41,6 +41,7 @@
     "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-replace": "^2.0.0",
     "stats.js": "mrdoob/stats.js",
-    "tubugl-3d-shape": "^1.6.1"
+    "tubugl-3d-shape": "^1.6.2",
+    "tubugl-helper": "^1.2.0"
   }
 }

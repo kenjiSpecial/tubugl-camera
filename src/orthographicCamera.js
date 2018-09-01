@@ -1,13 +1,7 @@
 import EventEmitter from 'wolfy87-eventemitter';
-import {
-	mat4
-} from 'gl-matrix/src/gl-matrix';
-import {
-	Vector3
-} from 'tubugl-math/src/vector3';
-import {
-	Euler
-} from 'tubugl-math/src/euler';
+import { mat4 } from 'gl-matrix/src/gl-matrix';
+import { Vector3 } from 'tubugl-math/src/vector3';
+import { Euler } from 'tubugl-math/src/euler';
 
 export class OrthographicCamera extends EventEmitter {
 	constructor(
