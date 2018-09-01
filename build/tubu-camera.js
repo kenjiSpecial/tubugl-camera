@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('wolfy87-eventemitter'), require('gl-matrix/src/gl-matrix'), require('tubugl-math/src/vector3'), require('tubugl-math/src/euler'), require('gsap/TweenLite'), require('tubugl-utils'), require('gl-matrix')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'wolfy87-eventemitter', 'gl-matrix/src/gl-matrix', 'tubugl-math/src/vector3', 'tubugl-math/src/euler', 'gsap/TweenLite', 'tubugl-utils', 'gl-matrix'], factory) :
-  (factory((global.Tubu = {}),global.EventEmitter,global.glMatrix,global.vector3,global.euler,global.TweenLite,global.tubuglUtils,global.glMatrix$1));
-}(this, (function (exports,EventEmitter,glMatrix,vector3,euler,TweenLite,tubuglUtils,glMatrix$1) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('wolfy87-eventemitter'), require('gl-matrix/src/gl-matrix'), require('tubugl-math'), require('gsap/TweenLite'), require('tubugl-utils'), require('gl-matrix')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'wolfy87-eventemitter', 'gl-matrix/src/gl-matrix', 'tubugl-math', 'gsap/TweenLite', 'tubugl-utils', 'gl-matrix'], factory) :
+  (factory((global.Tubu = {}),global.EventEmitter,global.glMatrix,global.tubuglMath,global.TweenLite,global.tubuglUtils,global.glMatrix$1));
+}(this, (function (exports,EventEmitter,glMatrix,tubuglMath,TweenLite,tubuglUtils,glMatrix$1) { 'use strict';
 
   EventEmitter = EventEmitter && EventEmitter.hasOwnProperty('default') ? EventEmitter['default'] : EventEmitter;
   TweenLite = TweenLite && TweenLite.hasOwnProperty('default') ? TweenLite['default'] : TweenLite;
@@ -68,8 +68,9 @@
 
   		var _this = possibleConstructorReturn(this, (PerspectiveCamera.__proto__ || Object.getPrototypeOf(PerspectiveCamera)).call(this));
 
-  		_this.position = new vector3.Vector3();
-  		_this.rotation = new euler.Euler();
+  		_this.type = 'perspectiveCamera';
+  		_this.position = new tubuglMath.Vector3();
+  		_this.rotation = new tubuglMath.Euler();
 
   		_this._fov = fov;
   		_this._width = width;
@@ -175,6 +176,22 @@
   			this._updateProjectionMatrix();
   		}
   	}, {
+  		key: 'updateMatrix',
+  		value: function updateMatrix() {
+  			this.updateProjectionMatrix();
+  			this.updateViewMatrix();
+  		}
+  	}, {
+  		key: 'updateProjectionMatrix',
+  		value: function updateProjectionMatrix() {
+  			this._updateProjectionMatrix();
+  		}
+  	}, {
+  		key: 'updateViewMatrix',
+  		value: function updateViewMatrix() {
+  			this._updateViewMatrix();
+  		}
+  	}, {
   		key: '_updateProjectionMatrix',
   		value: function _updateProjectionMatrix() {
   			glMatrix.mat4.perspective(this.projectionMatrix, this._fov / 180 * Math.PI, this._width / this._height, this._near, this._far);
@@ -197,6 +214,31 @@
 
   			return this;
   		}
+  	}, {
+  		key: 'fov',
+  		get: function get$$1() {
+  			return this._fov;
+  		}
+  	}, {
+  		key: 'width',
+  		get: function get$$1() {
+  			return this._width;
+  		}
+  	}, {
+  		key: 'height',
+  		get: function get$$1() {
+  			return this._height;
+  		}
+  	}, {
+  		key: 'near',
+  		get: function get$$1() {
+  			return this._near;
+  		}
+  	}, {
+  		key: 'far',
+  		get: function get$$1() {
+  			return this._far;
+  		}
   	}]);
   	return PerspectiveCamera;
   }(EventEmitter);
@@ -216,7 +258,7 @@
   		_this._camera = camera;
   		_this.domElement = domElement;
 
-  		_this.target = new vector3.Vector3();
+  		_this.target = new tubuglMath.Vector3();
 
   		_this.minDistance = 0;
   		_this.maxDistance = Infinity;
@@ -254,8 +296,8 @@
   		};
 
   		// for reset
-  		_this.originTarget = new vector3.Vector3();
-  		_this.originPosition = new vector3.Vector3(_this._camera.position.x, _this._camera.position.y, _this._camera.position.z);
+  		_this.originTarget = new tubuglMath.Vector3();
+  		_this.originPosition = new tubuglMath.Vector3(_this._camera.position.x, _this._camera.position.y, _this._camera.position.z);
 
   		_this._isShiftDown = false;
 
@@ -631,8 +673,9 @@
 
   		var _this = possibleConstructorReturn(this, (OrthographicCamera.__proto__ || Object.getPrototypeOf(OrthographicCamera)).call(this));
 
-  		_this.position = new vector3.Vector3();
-  		_this.rotation = new euler.Euler();
+  		_this.type = 'orthographicCamera';
+  		_this.position = new tubuglMath.Vector3();
+  		_this.rotation = new tubuglMath.Euler();
 
   		_this._left = left;
   		_this._right = right;
@@ -730,6 +773,22 @@
   			if (far) this._far = far;
 
   			this._updateProjectionMatrix();
+  		}
+  	}, {
+  		key: 'updateMatrix',
+  		value: function updateMatrix() {
+  			this.updateProjectionMatrix();
+  			this.updateViewMatrix();
+  		}
+  	}, {
+  		key: 'updateProjectionMatrix',
+  		value: function updateProjectionMatrix() {
+  			this._updateProjectionMatrix();
+  		}
+  	}, {
+  		key: 'updateViewMatrix',
+  		value: function updateViewMatrix() {
+  			this._updateViewMatrix();
   		}
   	}, {
   		key: '_updateProjectionMatrix',

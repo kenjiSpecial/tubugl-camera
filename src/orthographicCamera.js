@@ -14,6 +14,7 @@ export class OrthographicCamera extends EventEmitter {
 	) {
 		super();
 
+		this.type = 'orthographicCamera';
 		this.position = new Vector3();
 		this.rotation = new Euler();
 
@@ -102,6 +103,19 @@ export class OrthographicCamera extends EventEmitter {
 		if (far) this._far = far;
 
 		this._updateProjectionMatrix();
+	}
+
+	updateMatrix() {
+		this.updateProjectionMatrix();
+		this.updateViewMatrix();
+	}
+
+	updateProjectionMatrix() {
+		this._updateProjectionMatrix();
+	}
+
+	updateViewMatrix() {
+		this._updateViewMatrix();
 	}
 
 	_updateProjectionMatrix() {

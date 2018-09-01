@@ -2,7 +2,6 @@
 // https://github.com/rollup/rollup-starter-lib
 // https://github.com/rollup
 
-import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import pkg from './package.json';
 import babel from 'rollup-plugin-babel';
@@ -36,7 +35,7 @@ export default [
 	{
 		input: './src/index.js',
 		output: [{
-			file: pkg.module,
+			file: pkg.esm,
 			format: 'es'
 		}]
 	}

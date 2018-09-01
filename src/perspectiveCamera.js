@@ -1,12 +1,17 @@
 import EventEmitter from 'wolfy87-eventemitter';
-import { mat4 } from 'gl-matrix/src/gl-matrix';
-import { Vector3 } from 'tubugl-math/src/vector3';
-import { Euler } from 'tubugl-math/src/euler';
+import {
+	mat4
+} from 'gl-matrix/src/gl-matrix';
+import {
+	Euler,
+	Vector3
+} from 'tubugl-math';
 
 export class PerspectiveCamera extends EventEmitter {
 	constructor(width = window.innerWidth, height = window.innerHeight, fov = 60, near = 1, far = 1000) {
 		super();
 
+		this.type = 'perspectiveCamera';
 		this.position = new Vector3();
 		this.rotation = new Euler();
 
@@ -101,6 +106,19 @@ export class PerspectiveCamera extends EventEmitter {
 		this._updateProjectionMatrix();
 	}
 
+	updateMatrix() {
+		this.updateProjectionMatrix();
+		this.updateViewMatrix();
+	}
+
+	updateProjectionMatrix() {
+		this._updateProjectionMatrix();
+	}
+
+	updateViewMatrix() {
+		this._updateViewMatrix();
+	}
+
 	_updateProjectionMatrix() {
 		mat4.perspective(
 			this.projectionMatrix,
@@ -124,5 +142,25 @@ export class PerspectiveCamera extends EventEmitter {
 		this.needsUpdate = false;
 
 		return this;
+	}
+	
+	get fov(){
+		return this._fov;
+	}
+	
+	get width(){
+		return this._width;
+	}
+	
+	get height(){
+		return this._height;
+	}
+	
+	get near(){
+		return this._near;
+	}
+	
+	get far(){
+		return this._far;
 	}
 }
