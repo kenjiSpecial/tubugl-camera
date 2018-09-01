@@ -2,8 +2,10 @@ import EventEmitter from 'wolfy87-eventemitter';
 import { mat4 } from 'gl-matrix/src/gl-matrix';
 import { Euler, Vector3 } from 'tubugl-math';
 import TweenLite from 'gsap/TweenLite';
+import { Vector3 as Vector3$1 } from 'tubugl-math/src/vector3';
 import { mathUtils } from 'tubugl-utils';
 import { vec3 } from 'gl-matrix';
+import { Euler as Euler$1 } from 'tubugl-math/src/euler';
 
 class PerspectiveCamera extends EventEmitter {
 	constructor(width = window.innerWidth, height = window.innerHeight, fov = 60, near = 1, far = 1000) {
@@ -173,7 +175,7 @@ class CameraController extends EventEmitter {
 		this._camera = camera;
 		this.domElement = domElement;
 
-		this.target = new Vector3();
+		this.target = new Vector3$1();
 
 		this.minDistance = 0;
 		this.maxDistance = Infinity;
@@ -211,8 +213,8 @@ class CameraController extends EventEmitter {
 		};
 
 		// for reset
-		this.originTarget = new Vector3();
-		this.originPosition = new Vector3(this._camera.position.x, this._camera.position.y, this._camera.position.z);
+		this.originTarget = new Vector3$1();
+		this.originPosition = new Vector3$1(this._camera.position.x, this._camera.position.y, this._camera.position.z);
 
 		this._isShiftDown = false;
 
@@ -276,6 +278,7 @@ class CameraController extends EventEmitter {
 	}
 	update() {
 		let s = this._spherical;
+		// console.log(s.radius);
 		var sinPhiRadius = Math.sin(s.phi) * s.radius;
 
 		this._camera.position.x = sinPhiRadius * Math.sin(s.theta) + this.target.x;
@@ -528,13 +531,15 @@ class CameraController extends EventEmitter {
 		vec3.cross(xDir, zDir, [0, 1, 0]);
 		vec3.cross(yDir, xDir, zDir);
 
-		this.target.x += xDir[0] * this._panDelta.x + yDir[0] * this._panDelta.y;
-		this.target.y += xDir[1] * this._panDelta.x + yDir[1] * this._panDelta.y;
-		this.target.z += xDir[2] * this._panDelta.x + yDir[2] * this._panDelta.y;
+		const scale = Math.max(this._spherical.radius / 2000, 0.001);
+
+		this.target.x += (xDir[0] * this._panDelta.x + yDir[0] * this._panDelta.y) * scale;
+		this.target.y += (xDir[1] * this._panDelta.x + yDir[1] * this._panDelta.y) * scale;
+		this.target.z += (xDir[2] * this._panDelta.x + yDir[2] * this._panDelta.y) * scale;
 	}
 	_updateRotateHandler() {
-		this._spherical.theta += -this._roatteDelta.x / this.domElement.clientWidth * Math.PI;
-		this._spherical.phi += -this._roatteDelta.y / this.domElement.clientHeight * Math.PI;
+		this._spherical.theta += (-this._roatteDelta.x / this.domElement.clientWidth) * Math.PI;
+		this._spherical.phi += (-this._roatteDelta.y / this.domElement.clientHeight) * Math.PI;
 	}
 }
 
@@ -550,8 +555,8 @@ class OrthographicCamera extends EventEmitter {
 		super();
 
 		this.type = 'orthographicCamera';
-		this.position = new Vector3();
-		this.rotation = new Euler();
+		this.position = new Vector3$1();
+		this.rotation = new Euler$1();
 
 		this._left = left;
 		this._right = right;
@@ -639,7 +644,7 @@ class OrthographicCamera extends EventEmitter {
 
 		this._updateProjectionMatrix();
 	}
-	
+
 	updateMatrix() {
 		this.updateProjectionMatrix();
 		this.updateViewMatrix();

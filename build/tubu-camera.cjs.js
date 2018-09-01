@@ -8,8 +8,10 @@ var EventEmitter = _interopDefault(require('wolfy87-eventemitter'));
 var glMatrix = require('gl-matrix/src/gl-matrix');
 var tubuglMath = require('tubugl-math');
 var TweenLite = _interopDefault(require('gsap/TweenLite'));
+var vector3 = require('tubugl-math/src/vector3');
 var tubuglUtils = require('tubugl-utils');
 var glMatrix$1 = require('gl-matrix');
+var euler = require('tubugl-math/src/euler');
 
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -262,7 +264,7 @@ var CameraController = function (_EventEmitter) {
 		_this._camera = camera;
 		_this.domElement = domElement;
 
-		_this.target = new tubuglMath.Vector3();
+		_this.target = new vector3.Vector3();
 
 		_this.minDistance = 0;
 		_this.maxDistance = Infinity;
@@ -300,8 +302,8 @@ var CameraController = function (_EventEmitter) {
 		};
 
 		// for reset
-		_this.originTarget = new tubuglMath.Vector3();
-		_this.originPosition = new tubuglMath.Vector3(_this._camera.position.x, _this._camera.position.y, _this._camera.position.z);
+		_this.originTarget = new vector3.Vector3();
+		_this.originPosition = new vector3.Vector3(_this._camera.position.x, _this._camera.position.y, _this._camera.position.z);
 
 		_this._isShiftDown = false;
 
@@ -373,6 +375,7 @@ var CameraController = function (_EventEmitter) {
 		key: 'update',
 		value: function update() {
 			var s = this._spherical;
+			// console.log(s.radius);
 			var sinPhiRadius = Math.sin(s.phi) * s.radius;
 
 			this._camera.position.x = sinPhiRadius * Math.sin(s.theta) + this.target.x;
@@ -649,9 +652,11 @@ var CameraController = function (_EventEmitter) {
 			glMatrix$1.vec3.cross(xDir, zDir, [0, 1, 0]);
 			glMatrix$1.vec3.cross(yDir, xDir, zDir);
 
-			this.target.x += xDir[0] * this._panDelta.x + yDir[0] * this._panDelta.y;
-			this.target.y += xDir[1] * this._panDelta.x + yDir[1] * this._panDelta.y;
-			this.target.z += xDir[2] * this._panDelta.x + yDir[2] * this._panDelta.y;
+			var scale = Math.max(this._spherical.radius / 2000, 0.001);
+
+			this.target.x += (xDir[0] * this._panDelta.x + yDir[0] * this._panDelta.y) * scale;
+			this.target.y += (xDir[1] * this._panDelta.x + yDir[1] * this._panDelta.y) * scale;
+			this.target.z += (xDir[2] * this._panDelta.x + yDir[2] * this._panDelta.y) * scale;
 		}
 	}, {
 		key: '_updateRotateHandler',
@@ -678,8 +683,8 @@ var OrthographicCamera = function (_EventEmitter) {
 		var _this = possibleConstructorReturn(this, (OrthographicCamera.__proto__ || Object.getPrototypeOf(OrthographicCamera)).call(this));
 
 		_this.type = 'orthographicCamera';
-		_this.position = new tubuglMath.Vector3();
-		_this.rotation = new tubuglMath.Euler();
+		_this.position = new vector3.Vector3();
+		_this.rotation = new euler.Euler();
 
 		_this._left = left;
 		_this._right = right;

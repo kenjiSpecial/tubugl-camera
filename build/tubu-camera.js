@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('wolfy87-eventemitter'), require('gl-matrix/src/gl-matrix'), require('tubugl-math'), require('gsap/TweenLite'), require('tubugl-utils'), require('gl-matrix')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'wolfy87-eventemitter', 'gl-matrix/src/gl-matrix', 'tubugl-math', 'gsap/TweenLite', 'tubugl-utils', 'gl-matrix'], factory) :
-  (factory((global.Tubu = {}),global.EventEmitter,global.glMatrix,global.tubuglMath,global.TweenLite,global.tubuglUtils,global.glMatrix$1));
-}(this, (function (exports,EventEmitter,glMatrix,tubuglMath,TweenLite,tubuglUtils,glMatrix$1) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('wolfy87-eventemitter'), require('gl-matrix/src/gl-matrix'), require('tubugl-math'), require('gsap/TweenLite'), require('tubugl-math/src/vector3'), require('tubugl-utils'), require('gl-matrix'), require('tubugl-math/src/euler')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'wolfy87-eventemitter', 'gl-matrix/src/gl-matrix', 'tubugl-math', 'gsap/TweenLite', 'tubugl-math/src/vector3', 'tubugl-utils', 'gl-matrix', 'tubugl-math/src/euler'], factory) :
+  (factory((global.Tubu = {}),global.EventEmitter,global.glMatrix,global.tubuglMath,global.TweenLite,global.vector3,global.tubuglUtils,global.glMatrix$1,global.euler));
+}(this, (function (exports,EventEmitter,glMatrix,tubuglMath,TweenLite,vector3,tubuglUtils,glMatrix$1,euler) { 'use strict';
 
   EventEmitter = EventEmitter && EventEmitter.hasOwnProperty('default') ? EventEmitter['default'] : EventEmitter;
   TweenLite = TweenLite && TweenLite.hasOwnProperty('default') ? TweenLite['default'] : TweenLite;
@@ -258,7 +258,7 @@
   		_this._camera = camera;
   		_this.domElement = domElement;
 
-  		_this.target = new tubuglMath.Vector3();
+  		_this.target = new vector3.Vector3();
 
   		_this.minDistance = 0;
   		_this.maxDistance = Infinity;
@@ -296,8 +296,8 @@
   		};
 
   		// for reset
-  		_this.originTarget = new tubuglMath.Vector3();
-  		_this.originPosition = new tubuglMath.Vector3(_this._camera.position.x, _this._camera.position.y, _this._camera.position.z);
+  		_this.originTarget = new vector3.Vector3();
+  		_this.originPosition = new vector3.Vector3(_this._camera.position.x, _this._camera.position.y, _this._camera.position.z);
 
   		_this._isShiftDown = false;
 
@@ -369,6 +369,7 @@
   		key: 'update',
   		value: function update() {
   			var s = this._spherical;
+  			// console.log(s.radius);
   			var sinPhiRadius = Math.sin(s.phi) * s.radius;
 
   			this._camera.position.x = sinPhiRadius * Math.sin(s.theta) + this.target.x;
@@ -645,9 +646,11 @@
   			glMatrix$1.vec3.cross(xDir, zDir, [0, 1, 0]);
   			glMatrix$1.vec3.cross(yDir, xDir, zDir);
 
-  			this.target.x += xDir[0] * this._panDelta.x + yDir[0] * this._panDelta.y;
-  			this.target.y += xDir[1] * this._panDelta.x + yDir[1] * this._panDelta.y;
-  			this.target.z += xDir[2] * this._panDelta.x + yDir[2] * this._panDelta.y;
+  			var scale = Math.max(this._spherical.radius / 2000, 0.001);
+
+  			this.target.x += (xDir[0] * this._panDelta.x + yDir[0] * this._panDelta.y) * scale;
+  			this.target.y += (xDir[1] * this._panDelta.x + yDir[1] * this._panDelta.y) * scale;
+  			this.target.z += (xDir[2] * this._panDelta.x + yDir[2] * this._panDelta.y) * scale;
   		}
   	}, {
   		key: '_updateRotateHandler',
@@ -674,8 +677,8 @@
   		var _this = possibleConstructorReturn(this, (OrthographicCamera.__proto__ || Object.getPrototypeOf(OrthographicCamera)).call(this));
 
   		_this.type = 'orthographicCamera';
-  		_this.position = new tubuglMath.Vector3();
-  		_this.rotation = new tubuglMath.Euler();
+  		_this.position = new vector3.Vector3();
+  		_this.rotation = new euler.Euler();
 
   		_this._left = left;
   		_this._right = right;
