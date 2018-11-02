@@ -243,6 +243,45 @@
   	return PerspectiveCamera;
   }(EventEmitter);
 
+  var DampedAction = function () {
+  	function DampedAction() {
+  		classCallCheck(this, DampedAction);
+
+  		this.value = 0.0;
+  		this.damping = 0.85;
+  	}
+
+  	createClass(DampedAction, [{
+  		key: "addForce",
+  		value: function addForce(force) {
+  			this.value += force;
+  		}
+
+  		/** updates the damping and calls {@link damped-callback}. */
+
+  	}, {
+  		key: "update",
+  		value: function update() {
+  			var isActive = this.value * this.value > 0.000001;
+  			if (isActive) {
+  				this.value *= this.damping;
+  			} else {
+  				this.stop();
+  			}
+  			return this.value;
+  		}
+
+  		/** stops the damping. */
+
+  	}, {
+  		key: "stop",
+  		value: function stop() {
+  			this.value = 0.0;
+  		}
+  	}]);
+  	return DampedAction;
+  }();
+
   var CameraController = function (_EventEmitter) {
   	inherits(CameraController, _EventEmitter);
 
@@ -299,6 +338,13 @@
   		_this.originTarget = new vector3.Vector3();
   		_this.originPosition = new vector3.Vector3(_this._camera.position.x, _this._camera.position.y, _this._camera.position.z);
 
+  		_this.targetXDampedAction = new DampedAction();
+  		_this.targetYDampedAction = new DampedAction();
+  		_this.targetZDampedAction = new DampedAction();
+  		_this.targetThetaDampedAction = new DampedAction();
+  		_this.targetPhiDampedAction = new DampedAction();
+  		_this.targetRadiusDampedAction = new DampedAction();
+
   		_this._isShiftDown = false;
 
   		_this._rotateStart = {
@@ -332,6 +378,7 @@
 
   		_this._bindEvens();
   		_this.setEventHandler();
+  		_this.startTick();
   		return _this;
   	}
 
@@ -366,10 +413,31 @@
   			window.removeEventListener('keydown', this._onKeyUpHandler, false);
   		}
   	}, {
-  		key: 'update',
-  		value: function update() {
+  		key: 'startTick',
+  		value: function startTick() {
+  			TweenLite.ticker.addEventListener('tick', this.tick, this);
+  		}
+  	}, {
+  		key: 'tick',
+  		value: function tick() {
+  			this.updateDampedAction();
+  			this.updateCamera();
+  		}
+  	}, {
+  		key: 'updateDampedAction',
+  		value: function updateDampedAction() {
+  			this.target.x += this.targetXDampedAction.update();
+  			this.target.y += this.targetYDampedAction.update();
+  			this.target.z += this.targetZDampedAction.update();
+
+  			this._spherical.theta += this.targetThetaDampedAction.update();
+  			this._spherical.phi += this.targetPhiDampedAction.update();
+  			this._spherical.radius += this.targetRadiusDampedAction.update();
+  		}
+  	}, {
+  		key: 'updateCamera',
+  		value: function updateCamera() {
   			var s = this._spherical;
-  			// console.log(s.radius);
   			var sinPhiRadius = Math.sin(s.phi) * s.radius;
 
   			this._camera.position.x = sinPhiRadius * Math.sin(s.theta) + this.target.x;
@@ -466,20 +534,17 @@
   					y: this._panEnd.y
   				};
   			}
-  			this.update();
+  			// this.update();
   		}
   	}, {
   		key: '_mouseWheelHandler',
   		value: function _mouseWheelHandler(event) {
   			if (event.deltaY > 0) {
-  				this._spherical.radius *= 1.05;
+  				// this._spherical.radius *= 1.05;
+  				this.targetRadiusDampedAction.addForce(1);
   			} else {
-  				this._spherical.radius *= 0.95;
+  				this.targetRadiusDampedAction.addForce(-1);
   			}
-
-  			this._spherical.radius = tubuglUtils.mathUtils.clamp(this._spherical.radius, this.minDistance, this.maxDistance);
-
-  			this.update();
   		}
   	}, {
   		key: '_touchStartHandler',
@@ -513,8 +578,6 @@
   	}, {
   		key: '_touchMoveHandler',
   		value: function _touchMoveHandler(event) {
-  			var _this2 = this;
-
   			var dX = void 0,
   			    dY = void 0,
   			    dDis = void 0;
@@ -552,13 +615,8 @@
 
   					TweenLite.killTweensOf(this._spherical);
   					TweenLite.to(this._spherical, 0.3, {
-  						radius: targetRadius,
-  						onUpdate: function onUpdate() {
-  							_this2.update();
-  						}
-  						// ease: Quint.easeOut
+  						radius: targetRadius
   					});
-
   					break;
   				case 3:
   					this._panEnd = {
@@ -570,6 +628,8 @@
   						y: this._panEnd.y - this._panStart.y
   					};
 
+  					this._panDelta.x *= -1;
+
   					this._updatePanHandler();
   					this._panStart = {
   						x: this._panEnd.x,
@@ -578,7 +638,7 @@
   					break;
   			}
 
-  			this.update();
+  			// this.update();
   		}
   	}, {
   		key: '_touchEndHandler',
@@ -621,7 +681,7 @@
   				this._updateRotateHandler();
   			}
 
-  			this.update();
+  			// this.update();
   		}
   	}, {
   		key: '_onKeyUpHandler',
@@ -648,15 +708,15 @@
 
   			var scale = Math.max(this._spherical.radius / 2000, 0.001);
 
-  			this.target.x += (xDir[0] * this._panDelta.x + yDir[0] * this._panDelta.y) * scale;
-  			this.target.y += (xDir[1] * this._panDelta.x + yDir[1] * this._panDelta.y) * scale;
-  			this.target.z += (xDir[2] * this._panDelta.x + yDir[2] * this._panDelta.y) * scale;
+  			this.targetXDampedAction.addForce((xDir[0] * this._panDelta.x + yDir[0] * this._panDelta.y) * scale);
+  			this.targetYDampedAction.addForce((xDir[1] * this._panDelta.x + yDir[1] * this._panDelta.y) * scale);
+  			this.targetZDampedAction.addForce((xDir[2] * this._panDelta.x + yDir[2] * this._panDelta.y) * scale);
   		}
   	}, {
   		key: '_updateRotateHandler',
   		value: function _updateRotateHandler() {
-  			this._spherical.theta += -this._roatteDelta.x / this.domElement.clientWidth * Math.PI;
-  			this._spherical.phi += -this._roatteDelta.y / this.domElement.clientHeight * Math.PI;
+  			this.targetThetaDampedAction.addForce(-this._roatteDelta.x / this.domElement.clientWidth);
+  			this.targetPhiDampedAction.addForce(-this._roatteDelta.y / this.domElement.clientHeight);
   		}
   	}]);
   	return CameraController;

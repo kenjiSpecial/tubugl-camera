@@ -317,6 +317,8 @@ export class CameraController extends EventEmitter {
 					y: this._panEnd.y - this._panStart.y
 				};
 
+				this._panDelta.x *= -1;
+
 				this._updatePanHandler();
 				this._panStart = {
 					x: this._panEnd.x,
