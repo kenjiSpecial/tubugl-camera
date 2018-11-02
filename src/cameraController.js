@@ -4,6 +4,7 @@ import TweenLite from 'gsap/TweenLite';
 import { Vector3 } from 'tubugl-math/src/vector3';
 import { mathUtils } from 'tubugl-utils';
 import { vec3 } from 'gl-matrix';
+import { DampedAction } from './dampedAction';
 
 export class CameraController extends EventEmitter {
 	constructor(camera, domElement = document.body) {
@@ -56,6 +57,13 @@ export class CameraController extends EventEmitter {
 		this.originTarget = new Vector3();
 		this.originPosition = new Vector3(this._camera.position.x, this._camera.position.y, this._camera.position.z);
 
+		this.targetXDampedAction = new DampedAction();
+		this.targetYDampedAction = new DampedAction();
+		this.targetZDampedAction = new DampedAction();
+		this.targetThetaDampedAction = new DampedAction();
+		this.targetPhiDampedAction = new DampedAction();
+		this.targetRadiusDampedAction = new DampedAction();
+
 		this._isShiftDown = false;
 
 		this._rotateStart = {
@@ -89,6 +97,7 @@ export class CameraController extends EventEmitter {
 
 		this._bindEvens();
 		this.setEventHandler();
+		this.startTick();
 	}
 	setEventHandler() {
 		this.domElement.addEventListener('contextmenu', this._contextMenuHandler, false);
@@ -116,9 +125,24 @@ export class CameraController extends EventEmitter {
 		window.removeEventListener('keydown', this._onKeyDownHandler, false);
 		window.removeEventListener('keydown', this._onKeyUpHandler, false);
 	}
-	update() {
+	startTick() {
+		TweenLite.ticker.addEventListener('tick', this.tick, this);
+	}
+	tick() {
+		this.updateDampedAction();
+		this.updateCamera();
+	}
+	updateDampedAction() {
+		this.target.x += this.targetXDampedAction.update();
+		this.target.y += this.targetYDampedAction.update();
+		this.target.z += this.targetZDampedAction.update();
+
+		this._spherical.theta += this.targetThetaDampedAction.update();
+		this._spherical.phi += this.targetPhiDampedAction.update();
+		this._spherical.radius += this.targetRadiusDampedAction.update();
+	}
+	updateCamera() {
 		let s = this._spherical;
-		// console.log(s.radius);
 		var sinPhiRadius = Math.sin(s.phi) * s.radius;
 
 		this._camera.position.x = sinPhiRadius * Math.sin(s.theta) + this.target.x;
@@ -206,18 +230,15 @@ export class CameraController extends EventEmitter {
 				y: this._panEnd.y
 			};
 		}
-		this.update();
+		// this.update();
 	}
 	_mouseWheelHandler(event) {
 		if (event.deltaY > 0) {
-			this._spherical.radius *= 1.05;
+			// this._spherical.radius *= 1.05;
+			this.targetRadiusDampedAction.addForce(1);
 		} else {
-			this._spherical.radius *= 0.95;
+			this.targetRadiusDampedAction.addForce(-1);
 		}
-
-		this._spherical.radius = mathUtils.clamp(this._spherical.radius, this.minDistance, this.maxDistance);
-
-		this.update();
 	}
 
 	_touchStartHandler(event) {
@@ -283,13 +304,8 @@ export class CameraController extends EventEmitter {
 
 				TweenLite.killTweensOf(this._spherical);
 				TweenLite.to(this._spherical, 0.3, {
-					radius: targetRadius,
-					onUpdate: () => {
-						this.update();
-					}
-					// ease: Quint.easeOut
+					radius: targetRadius
 				});
-
 				break;
 			case 3:
 				this._panEnd = {
@@ -309,7 +325,7 @@ export class CameraController extends EventEmitter {
 				break;
 		}
 
-		this.update();
+		// this.update();
 	}
 
 	_touchEndHandler(event) {}
@@ -350,7 +366,7 @@ export class CameraController extends EventEmitter {
 			this._updateRotateHandler();
 		}
 
-		this.update();
+		// this.update();
 	}
 	_onKeyUpHandler(event) {
 		switch (event.keyCode) {
@@ -373,12 +389,12 @@ export class CameraController extends EventEmitter {
 
 		const scale = Math.max(this._spherical.radius / 2000, 0.001);
 
-		this.target.x += (xDir[0] * this._panDelta.x + yDir[0] * this._panDelta.y) * scale;
-		this.target.y += (xDir[1] * this._panDelta.x + yDir[1] * this._panDelta.y) * scale;
-		this.target.z += (xDir[2] * this._panDelta.x + yDir[2] * this._panDelta.y) * scale;
+		this.targetXDampedAction.addForce((xDir[0] * this._panDelta.x + yDir[0] * this._panDelta.y) * scale);
+		this.targetYDampedAction.addForce((xDir[1] * this._panDelta.x + yDir[1] * this._panDelta.y) * scale);
+		this.targetZDampedAction.addForce((xDir[2] * this._panDelta.x + yDir[2] * this._panDelta.y) * scale);
 	}
 	_updateRotateHandler() {
-		this._spherical.theta += (-this._roatteDelta.x / this.domElement.clientWidth) * Math.PI;
-		this._spherical.phi += (-this._roatteDelta.y / this.domElement.clientHeight) * Math.PI;
+		this.targetThetaDampedAction.addForce(-this._roatteDelta.x / this.domElement.clientWidth);
+		this.targetPhiDampedAction.addForce(-this._roatteDelta.y / this.domElement.clientHeight);
 	}
 }
